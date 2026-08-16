@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suhanu's Culinary Companion</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- React 18 & Babel Standalone -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --bg-gradient: linear-gradient(140deg, #FBF7F8 0%, #F5F7F6 50%, #FAF6FA 100%);
+      --primary: #E7829A;
+      --primary-light: #FDE8ED;
+      --primary-border: #F7CAD0;
+      --accent-sage: #60986A;
+      --accent-sage-light: #E4F1E7;
+      --card-bg: #FFFFFF;
+      --card-border: rgba(231, 130, 154, 0.15);
+      --shadow-md: 0 10px 25px -5px rgba(231, 130, 154, 0.12);
+      --text-main: #1F2421;
+      --text-muted: #5C6460;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4 { font-family: var(--font-heading); }
+
+    .app-wrapper {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px 20px 100px 20px;
+    }
+
+    .main-layout {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    @media (min-width: 900px) {
+      .main-layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+      }
+    }
+
+    .main-content {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      box-shadow: var(--shadow-md);
+      padding: 20px;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #F093A9 0%, #E7829A 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      background: var(--accent-sage-light);
+      color: var(--accent-sage);
+      border: 1px solid var(--accent-sage-border);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--text-main);
+      border: 1px solid rgba(0,0,0,0.12);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .chip-active { background: var(--primary); color: white; }
+    .chip-inactive { background: #F4F4F6; color: var(--text-muted); }
+
+    input[type="text"], textarea, select {
+      font-family: var(--font-body);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .desktop-nav { display: none; }
+    @media (min-width: 900px) {
+      .desktop-nav { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 24px; }
+      .mobile-nav { display: none !important; }
+    }
+
+    .mobile-nav {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 8px 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid var(--card-border);
+      display: flex;
+      justify: space-around;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const SUHANU_INITIAL_PANTRY = [
+      { id: '1', name: 'Rice', category: 'Grains & Flours', quantity: '1 bag', inStock: false },
+      { id: '2', name: 'Atta (Wheat Flour)', category: 'Grains & Flours', quantity: '5 kg', inStock: false },
+      { id: '3', name: 'Poha', category: 'Grains & Flours', quantity: '1 kg', inStock: false },
+      { id: '4', name: 'Oats', category: 'Grains & Flours', quantity: '1 pack', inStock: false },
+      { id: '5', name: 'Rava', category: 'Grains & Flours', quantity: '500g', inStock: false },
+      { id: '6', name: 'Toor Dal', category: 'Pulses & Dals', quantity: '1 kg', inStock: false },
+      { id: '7', name: 'Moong Dal', category: 'Pulses & Dals', quantity: '1 kg', inStock: false },
+      { id: '8', name: 'Chana (Chickpeas)', category: 'Pulses & Dals', quantity: '1 kg', inStock: false },
+      { id: '9', name: 'Rajma', category: 'Pulses & Dals', quantity: '1 kg', inStock: false },
+      { id: '10', name: 'Groundnut Oil', category: 'Oils & Fats', quantity: '1 L', inStock: false },
+      { id: '11', name: 'Mustard Oil', category: 'Oils & Fats', quantity: '1 L', inStock: false },
+      { id: '12', name: 'Desi Ghee', category: 'Oils & Fats', quantity: '500g', inStock: false },
+      { id: '13', name: 'Butter & Cheese', category: 'Oils & Fats', quantity: '1 pack', inStock: false },
+      { id: '14', name: 'Spices (Jeera, Haldi, Mirch)', category: 'Spices', quantity: '1 set', inStock: false },
+      { id: '15', name: 'Milk', category: 'Dairy & Fresh', quantity: '1 L', inStock: false },
+      { id: '16', name: 'Curd / Yogurt', category: 'Dairy & Fresh', quantity: '500g', inStock: false },
+      { id: '17', name: 'Paneer (Cottage Cheese)', category: 'Dairy & Fresh', quantity: '250g', inStock: false },
+      { id: '18', name: 'Bread / Buns', category: 'Dairy & Fresh', quantity: '1 packet', inStock: false },
+      { id: '19', name: 'Onions, Potatoes, Tomatoes', category: 'Veggies', quantity: 'Assorted', inStock: false },
+      { id: '20', name: 'Dry Fruits (Almonds, Cashews)', category: 'Snacks', quantity: '250g', inStock: false },
+      { id: '21', name: 'Makhana (Fox Nuts)', category: 'Snacks', quantity: '1 pack', inStock: false }
+    ];
+
+    const SAMPLE_RECIPES = [
+      {
+        id: 'rec-poha-1',
+        title: 'Kanda Batata Poha with Roasted Peanuts',
+        image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80',
+        prepTime: '5 mins', cookTime: '10 mins', effortLevel: '0-5 Mins Effort',
+        calories: 280, protein: '7g', carbs: '48g', fat: '8g',
+        tags: ['Low Calorie', 'Quick & Easy'],
+        description: 'Light flattened rice tempered with mustard seeds, curry leaves, onions, and lemon.',
+        instructions: ['Rinse poha twice.', 'Heat oil in pan, crackle jeera & mustard seeds.', 'Add onions & chillies.', 'Fold in poha for 3 mins & serve hot!']
+      },
+      {
+        id: 'rec-paneer-bhurji',
+        title: 'Masala Paneer Bhurji with Toast',
+        image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
+        prepTime: '5 mins', cookTime: '8 mins', effortLevel: '0-5 Mins Effort',
+        calories: 380, protein: '22g', carbs: '24g', fat: '20g',
+        tags: ['High Protein', 'Quick & Easy'],
+        description: 'Scrambled paneer cooked in an onion-tomato spiced gravy with toasted bread.',
+        instructions: ['Crumble fresh paneer.', 'Saute onions & tomatoes in butter.', 'Stir in paneer & spices.', 'Serve with buttered toast!']
+      },
+      {
+        id: 'rec-oats-chilla',
+        title: 'Oats & Besan Chilla with Curd',
+        image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+        prepTime: '5 mins', cookTime: '10 mins', effortLevel: '15 Mins Effort',
+        calories: 240, protein: '14g', carbs: '32g', fat: '6g',
+        tags: ['High Protein', 'Low Calorie'],
+        description: 'Crispy oats crepe loaded with finely chopped onions and chillies.',
+        instructions: ['Blend oats to powder.', 'Mix oats, curd, onions, & salt into batter.', 'Cook on hot tawa until crisp golden brown!']
+      }
+    ];
+
+    function App() {
+      const [activeTab, setActiveTab] = React.useState('pantry'); // Default is Pantry
+      const [pantryItems, setPantryItems] = React.useState(() => {
+        const saved = localStorage.getItem('suhanu_pantry_v6');
+        return saved ? JSON.parse(saved) : SUHANU_INITIAL_PANTRY;
+      });
+      const [selectedRecipe, setSelectedRecipe] = React.useState(null);
+      const [recipeSubTab, setRecipeSubTab] = React.useState('pantry');
+      const [moodResults, setMoodResults] = React.useState(null);
+      const [moodLoading, setMoodLoading] = React.useState(false);
+      const [selectedMood, setSelectedMood] = React.useState('tired');
+
+      React.useEffect(() => {
+        localStorage.setItem('suhanu_pantry_v6', JSON.stringify(pantryItems));
+      }, [pantryItems]);
+
+      const loadAllCheckedPreset = () => {
+        setPantryItems(SUHANU_INITIAL_PANTRY.map(i => ({ ...i, inStock: true })));
+      };
+
+      const loadAllUncheckedPreset = () => {
+        setPantryItems(SUHANU_INITIAL_PANTRY.map(i => ({ ...i, inStock: false })));
+      };
+
+      const handleGetMoodAi = () => {
+        setMoodLoading(true);
+        setTimeout(() => {
+          setMoodResults(SAMPLE_RECIPES.slice(0, 2));
+          setMoodLoading(false);
+        }, 600);
+      };
+
+      return (
+        <div className="app-wrapper">
+          {/* Header Banner - Full Width */}
+          <div className="card" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #FDE8ED 0%, #E7829A 100%)', color: 'white', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>S</div>
+              <div>
+                <h1 style={{ fontSize: '1.4rem', color: '#1F2421' }}>Suhanu's Culinary Companion</h1>
+                <p style={{ fontSize: '0.82rem', color: '#5C6460' }}>Personalized Grocery & Meal Planner</p>
+              </div>
+            </div>
+            <span style={{ fontSize: '0.82rem', background: 'var(--accent-sage-light)', color: 'var(--accent-sage)', padding: '4px 14px', borderRadius: '999px', fontWeight: '600' }}>
+              {pantryItems.filter(i => i.inStock).length} Items Checked
+            </span>
+          </div>
+
+          {/* 2-Column Main Layout */}
+          <div className="main-layout">
+            {/* Sidebar Nav (Desktop) */}
+            <aside className="desktop-nav">
+              <div className="card">
+                <button onClick={() => setActiveTab('pantry')} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: activeTab === 'pantry' ? 'var(--primary-light)' : 'none', color: activeTab === 'pantry' ? 'var(--primary)' : '#1F2421', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer' }}>Pantry & Groceries</button>
+                <button onClick={() => setActiveTab('planner')} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: activeTab === 'planner' ? 'var(--primary-light)' : 'none', color: activeTab === 'planner' ? 'var(--primary)' : '#1F2421', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer' }}>Weekly Planner</button>
+                <button onClick={() => setActiveTab('mood')} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: activeTab === 'mood' ? 'var(--primary-light)' : 'none', color: activeTab === 'mood' ? 'var(--primary)' : '#1F2421', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer' }}>What To Eat Now</button>
+                <button onClick={() => setActiveTab('recipes')} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: activeTab === 'recipes' ? 'var(--primary-light)' : 'none', color: activeTab === 'recipes' ? 'var(--primary)' : '#1F2421', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer' }}>Recipe Library</button>
+              </div>
+            </aside>
+
+            {/* Main Content */}
+            <main className="main-content">
+              {activeTab === 'pantry' && (
+                <div>
+                  <div className="card" style={{ marginBottom: '16px', background: 'linear-gradient(135deg, #FAF7F8, #FDE8ED)' }}>
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '4px' }}>Suhanu's Pantry Inventory</h3>
+                    <p style={{ fontSize: '0.82rem', color: '#5C6460', marginBottom: '12px' }}>Check off items you have in stock right now, or load a preset:</p>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button onClick={loadAllUncheckedPreset} className="btn-outline">Empty Slate (All Unchecked)</button>
+                      <button onClick={loadAllCheckedPreset} className="btn-outline">Full Pantry (All Checked)</button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '10px' }}>
+                    {pantryItems.map(item => (
+                      <div key={item.id} className="card" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: item.inStock ? 1 : 0.65 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <input type="checkbox" checked={item.inStock} onChange={() => setPantryItems(pantryItems.map(i => i.id === item.id ? { ...i, inStock: !i.inStock } : i))} style={{ accentColor: 'var(--primary)' }} />
+                          <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>{item.name}</span>
+                        </div>
+                        <span style={{ fontSize: '0.78rem', background: '#F4F4F6', padding: '2px 8px', borderRadius: '6px' }}>{item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'planner' && (
+                <div>
+                  <div className="card" style={{ marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '4px' }}>7-Day AI Meal Plan</h3>
+                    <p style={{ fontSize: '0.82rem', color: '#5C6460' }}>Custom weekly plan prioritizing your checked pantry items.</p>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
+                    {SAMPLE_RECIPES.map(recipe => (
+                      <div key={recipe.id} className="card">
+                        <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{recipe.title}</h4>
+                        <p style={{ fontSize: '0.8rem', color: '#5C6460', marginBottom: '12px' }}>{recipe.effortLevel} • {recipe.calories} kcal</p>
+                        <button onClick={() => setSelectedRecipe(recipe)} className="btn-secondary">View Recipe</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'mood' && (
+                <div>
+                  <div className="card" style={{ marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '4px' }}>What to Eat Right Now</h3>
+                    <p style={{ fontSize: '0.82rem', color: '#5C6460', marginBottom: '12px' }}>Select your energy level & click Get AI Recommendations below:</p>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+                      <button onClick={() => setSelectedMood('tired')} className={`chip ${selectedMood === 'tired' ? 'chip-active' : 'chip-inactive'}`}>Tired (0-5 Mins)</button>
+                      <button onClick={() => setSelectedMood('energetic')} className={`chip ${selectedMood === 'energetic' ? 'chip-active' : 'chip-inactive'}`}>Energetic</button>
+                    </div>
+                    <button onClick={handleGetMoodAi} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                      {moodLoading ? 'Asking AI...' : 'Get AI Recommendations'}
+                    </button>
+                  </div>
+
+                  {moodResults && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                      {moodResults.map(recipe => (
+                        <div key={recipe.id} className="card">
+                          <img src={recipe.image} style={{ width: '100%', height: '140px', borderRadius: '12px', objectFit: 'cover', marginBottom: '10px' }} />
+                          <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{recipe.title}</h4>
+                          <p style={{ fontSize: '0.82rem', color: '#5C6460', marginBottom: '12px' }}>{recipe.effortLevel} • {recipe.protein} Protein</p>
+                          <button onClick={() => setSelectedRecipe(recipe)} className="btn-primary">View Recipe</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'recipes' && (
+                <div>
+                  <div className="card" style={{ marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '8px' }}>Recipe Library</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <button onClick={() => setRecipeSubTab('pantry')} className={`chip ${recipeSubTab === 'pantry' ? 'chip-active' : 'chip-inactive'}`}>Pantry Match Recipes</button>
+                      <button onClick={() => setRecipeSubTab('global')} className={`chip ${recipeSubTab === 'global' ? 'chip-active' : 'chip-inactive'}`}>Global & Unconventional</button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                    {SAMPLE_RECIPES.map((recipe, idx) => (
+                      <div key={`${recipe.id}-${idx}`} className="card">
+                        <img src={recipe.image} style={{ width: '100%', height: '150px', borderRadius: '12px', objectFit: 'cover', marginBottom: '10px' }} />
+                        <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{recipe.title}</h4>
+                        <p style={{ fontSize: '0.82rem', color: '#5C6460', marginBottom: '12px' }}>{recipe.effortLevel} • {recipe.protein} Protein</p>
+                        <button onClick={() => setSelectedRecipe(recipe)} className="btn-primary">View Recipe</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </main>
+          </div>
+
+          {/* Mobile Bottom Navigation */}
+          <nav className="mobile-nav">
+            <button onClick={() => setActiveTab('pantry')} style={{ background: activeTab === 'pantry' ? 'var(--primary-light)' : 'none', border: 'none', padding: '8px 16px', borderRadius: '20px', fontWeight: 'bold' }}>Pantry</button>
+            <button onClick={() => setActiveTab('planner')} style={{ background: activeTab === 'planner' ? 'var(--primary-light)' : 'none', border: 'none', padding: '8px 16px', borderRadius: '20px', fontWeight: 'bold' }}>Weekly</button>
+            <button onClick={() => setActiveTab('mood')} style={{ background: activeTab === 'mood' ? 'var(--primary-light)' : 'none', border: 'none', padding: '8px 16px', borderRadius: '20px', fontWeight: 'bold' }}>Mood AI</button>
+            <button onClick={() => setActiveTab('recipes')} style={{ background: activeTab === 'recipes' ? 'var(--primary-light)' : 'none', border: 'none', padding: '8px 16px', borderRadius: '20px', fontWeight: 'bold' }}>Recipes</button>
+          </nav>
+
+          {/* Modal */}
+          {selectedRecipe && (
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 2000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '16px' }}>
+              <div className="card" style={{ width: '100%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', background: 'white' }}>
+                <h3 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>{selectedRecipe.title}</h3>
+                <img src={selectedRecipe.image} style={{ width: '100%', height: '180px', borderRadius: '12px', objectFit: 'cover', marginBottom: '12px' }} />
+                <p style={{ fontSize: '0.88rem', color: '#5C6460', marginBottom: '14px' }}>{selectedRecipe.description}</p>
+                <button onClick={() => setSelectedRecipe(null)} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>Close</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

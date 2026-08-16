@@ -1,59 +1,83 @@
 import React from 'react';
+import { IconPantry, IconCalendar, IconSparkles, IconBook } from './Icons.jsx';
 
 export default function Navigation({ activeTab, setActiveTab }) {
   const navItems = [
-    { id: 'pantry', label: 'Pantry', icon: '🛒' },
-    { id: 'planner', label: 'Weekly Plan', icon: '📅' },
-    { id: 'mood', label: 'What To Eat', icon: '✨' },
-    { id: 'recipes', label: 'Recipes', icon: '📖' }
+    { id: 'pantry', label: 'Pantry & Groceries', icon: IconPantry },
+    { id: 'planner', label: 'Weekly Planner', icon: IconCalendar },
+    { id: 'mood', label: 'What To Eat Now', icon: IconSparkles },
+    { id: 'recipes', label: 'Recipe Library', icon: IconBook }
   ];
 
   return (
-    <nav style={{
-      position: 'fixed',
-      bottom: '16px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      width: 'calc(100% - 32px)',
-      maxWidth: '480px',
-      background: 'rgba(255, 255, 255, 0.92)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      borderRadius: '30px',
-      padding: '6px 10px',
-      boxShadow: '0 12px 32px rgba(231, 148, 167, 0.25), 0 2px 8px rgba(0, 0, 0, 0.05)',
-      border: '1.5px solid rgba(255, 229, 236, 0.8)',
-      display: 'flex',
-      justify: 'space-around',
-      alignItems: 'center',
-      zIndex: 1000
-    }}>
-      {navItems.map((item) => {
-        const isActive = activeTab === item.id;
-        return (
-          <button
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            style={{
-              background: isActive ? 'linear-gradient(135deg, #FFE5EC 0%, #F7CAD0 100%)' : 'transparent',
-              border: 'none',
-              borderRadius: '20px',
-              padding: isActive ? '8px 16px' : '8px 12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-              color: isActive ? '#33272A' : '#6B5B60',
-              fontWeight: isActive ? '700' : '500',
-              fontSize: '0.85rem'
-            }}
-          >
-            <span style={{ fontSize: '1.15rem' }}>{item.icon}</span>
-            {isActive && <span>{item.label}</span>}
-          </button>
-        );
-      })}
-    </nav>
+    <>
+      {/* Desktop Navigation Sidebar */}
+      <aside className="desktop-nav">
+        <div className="card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ fontSize: '0.78rem', fontWeight: '700', textTransform: 'uppercase', color: '#949C98', letterSpacing: '0.5px', marginBottom: '8px', paddingLeft: '8px' }}>
+            Navigation
+          </div>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                style={{
+                  background: isActive ? 'var(--primary-light)' : 'transparent',
+                  color: isActive ? 'var(--primary)' : 'var(--text-main)',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  cursor: 'pointer',
+                  fontWeight: isActive ? '700' : '500',
+                  fontSize: '0.9rem',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'left'
+                }}
+              >
+                <Icon size={18} color={isActive ? 'var(--primary)' : 'var(--text-muted)'} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </aside>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="mobile-bottom-nav">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              style={{
+                background: isActive ? 'var(--primary-light)' : 'transparent',
+                border: 'none',
+                borderRadius: '20px',
+                padding: isActive ? '8px 16px' : '8px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                color: isActive ? 'var(--primary)' : 'var(--text-muted)',
+                fontWeight: isActive ? '700' : '500',
+                fontSize: '0.82rem'
+              }}
+            >
+              <Icon size={18} color={isActive ? 'var(--primary)' : 'var(--text-muted)'} />
+              {isActive && <span>{item.label.split(' ')[0]}</span>}
+            </button>
+          );
+        })}
+      </nav>
+    </>
   );
 }

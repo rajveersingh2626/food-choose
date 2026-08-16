@@ -5,22 +5,22 @@ export const SAMPLE_RECIPES = [
     image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80',
     prepTime: '5 mins',
     cookTime: '10 mins',
-    effortLevel: 'Super Low (15 mins total)',
+    effortLevel: '0-5 Mins Effort',
     effortRating: 1,
     calories: 280,
     protein: '7g',
     carbs: '48g',
     fat: '8g',
     tags: ['Low Calorie', 'Quick & Easy', 'Comfort Food', 'Breakfast'],
-    description: 'Light, fluffy flattened rice tempered with mustard seeds, curry leaves, onions, green chillies, and a squeeze of fresh lemon.',
-    ingredientsHave: ['Poha (Flattened Rice)', 'Onions', 'Mustard Oil', 'Jeera (Cumin Seeds)', 'Haldi (Turmeric Powder)', 'Green Chillies', 'Curry Leaves', 'Namak (Salt)', 'Cheeni (Sugar)'],
-    ingredientsNeed: ['Fresh Lemon', 'Peanuts (optional garnish)'],
+    description: 'Light, fluffy flattened rice tempered with mustard seeds, curry leaves, onions, green chillies, and lemon.',
+    ingredientsHave: ['Poha (Flattened Rice)', 'Onions', 'Mustard Oil', 'Jeera (Cumin Seeds)', 'Haldi (Turmeric Powder)', 'Green Chillies', 'Curry Leaves', 'Namak (Salt)'],
+    ingredientsNeed: ['Fresh Lemon', 'Peanuts'],
     instructions: [
-      'Rinse Poha gently in a colander under running water twice. Drain completely and set aside. Toss with a pinch of haldi, sugar, and salt.',
+      'Rinse Poha gently in a colander under running water twice. Drain completely and set aside.',
       'Heat 1 tbsp oil in a pan. Add jeera and mustard seeds until they crackle.',
       'Add curry leaves, green chillies, and chopped onions. Saute until onions turn soft and translucent.',
       'Add the softened poha to the pan. Gently fold everything together over low heat for 2-3 minutes.',
-      'Turn off heat, squeeze fresh lemon juice, garnish with coriander leaves and roasted peanuts if available. Serve hot with tea!'
+      'Turn off heat, squeeze fresh lemon juice, garnish with coriander leaves and roasted peanuts.'
     ]
   },
   {
@@ -29,23 +29,23 @@ export const SAMPLE_RECIPES = [
     image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
     prepTime: '5 mins',
     cookTime: '8 mins',
-    effortLevel: 'Super Low (13 mins)',
+    effortLevel: '0-5 Mins Effort',
     effortRating: 1,
     calories: 380,
     protein: '22g',
     carbs: '24g',
     fat: '20g',
     tags: ['High Protein', 'Quick & Easy', 'Comfort Food', 'Dinner'],
-    description: 'Scrambled paneer cooked in a fragrant onion-tomato spiced gravy, served with buttered toasted bread or phulkas.',
+    description: 'Scrambled paneer cooked in a fragrant onion-tomato spiced gravy, served with buttered toasted bread.',
     ingredientsHave: ['Paneer (Cottage Cheese)', 'Onions', 'Tomatoes', 'Ginger Garlic Paste', 'Green Chillies', 'Butter', 'Haldi (Turmeric Powder)', 'Lal Mirch Powder', 'Garam Masala', 'Bread / Buns'],
     ingredientsNeed: ['Fresh Coriander'],
     instructions: [
       'Crumble fresh paneer coarsely with your hands.',
       'Melt butter or ghee in a skillet over medium heat.',
       'Add finely chopped onions and green chillies. Saute until light golden.',
-      'Add ginger garlic paste, chopped tomatoes, haldi, lal mirch, and salt. Cook until tomatoes are mushy.',
-      'Stir in the crumbled paneer and garam masala. Mix gently and cook for 2 minutes (do not overcook so paneer stays soft).',
-      'Toast bread slices in butter on a tawa and serve piping hot alongside!'
+      'Add ginger garlic paste, chopped tomatoes, haldi, lal mirch, and salt. Cook until tomatoes are soft.',
+      'Stir in the crumbled paneer and garam masala. Mix gently and cook for 2 minutes.',
+      'Toast bread slices in butter on a tawa and serve piping hot!'
     ]
   },
   {
@@ -54,7 +54,7 @@ export const SAMPLE_RECIPES = [
     image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
     prepTime: '5 mins',
     cookTime: '10 mins',
-    effortLevel: 'Super Low (15 mins)',
+    effortLevel: '15 Mins Effort',
     effortRating: 1,
     calories: 240,
     protein: '14g',
@@ -63,14 +63,13 @@ export const SAMPLE_RECIPES = [
     tags: ['High Protein', 'Low Calorie', 'Quick & Easy', 'Breakfast'],
     description: 'Crispy, savory rolled oats crepe loaded with finely chopped onions, chillies, and warm spices.',
     ingredientsHave: ['Oats', 'Curd / Yogurt', 'Onions', 'Green Chillies', 'Ginger Garlic Paste', 'Jeera (Cumin Seeds)', 'Haldi (Turmeric Powder)', 'Groundnut Oil'],
-    ingredientsNeed: ['Besan (optional for extra crispness)'],
+    ingredientsNeed: ['Besan'],
     instructions: [
       'Grind oats into a fine powder in a blender jar.',
-      'In a bowl, mix oats powder, 2 tbsp curd, water, chopped onions, chillies, jeera, haldi, and salt into a smooth batter.',
+      'In a bowl, mix oats powder, curd, water, chopped onions, chillies, jeera, haldi, and salt into a smooth batter.',
       'Heat a non-stick tawa and lightly grease with oil.',
       'Pour a ladle of batter and spread into a thin circle.',
-      'Drizzle a few drops of oil around edges, cook until golden crisp on bottom, then flip and cook for 1 minute.',
-      'Serve hot with curd or ketchup!'
+      'Drizzle oil drops around edges, cook until golden crisp on bottom, then flip and cook for 1 minute.'
     ]
   },
   {
@@ -79,22 +78,22 @@ export const SAMPLE_RECIPES = [
     image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80',
     prepTime: '10 mins',
     cookTime: '20 mins',
-    effortLevel: 'Moderate Comfort (30 mins)',
+    effortLevel: '30 Mins Cooking',
     effortRating: 2,
     calories: 420,
     protein: '16g',
     carbs: '68g',
     fat: '10g',
-    tags: ['Comfort Food', 'High Protein', 'Balanced', 'Dinner'],
-    description: 'Creamy yellow lentils boiled with turmeric & garlic, tempered in aromatic ghee with jeera, dried chillies, and garlic.',
-    ingredientsHave: ['Toor Dal', 'Rice', 'Desi Ghee', 'Jeera (Cumin Seeds)', 'Garlic', 'Onions', 'Tomatoes', 'Haldi (Turmeric Powder)', 'Lal Mirch Powder', 'Hing', 'Curry Leaves'],
+    tags: ['Comfort Food', 'High Protein', 'Dinner'],
+    description: 'Creamy yellow lentils boiled with turmeric & garlic, tempered in aromatic ghee with jeera & garlic.',
+    ingredientsHave: ['Toor Dal', 'Rice', 'Desi Ghee', 'Jeera (Cumin Seeds)', 'Garlic', 'Onions', 'Tomatoes', 'Haldi (Turmeric Powder)'],
     ingredientsNeed: ['Dry Red Chilli'],
     instructions: [
       'Pressure cook or boil toor dal with water, haldi, salt, and half the chopped tomatoes until soft.',
-      'Cook basmati rice. In a small pan, heat 1 tbsp ghee, add jeera and cook until fragrant for jeera rice.',
-      'In a pan, heat ghee for dal tadka. Add jeera, garlic slices, curry leaves, and onions. Saute till golden brown.',
+      'Cook basmati rice. In a small pan, heat 1 tbsp ghee, add jeera and cook until fragrant.',
+      'In a pan, heat ghee for dal tadka. Add jeera, garlic slices, curry leaves, and onions. Saute till golden.',
       'Add remaining tomatoes, lal mirch powder, and pour into boiled dal.',
-      'Simmer for 3 minutes. Top with extra ghee tadka and serve hot with fluffy jeera rice!'
+      'Simmer for 3 minutes and serve hot with fluffy jeera rice!'
     ]
   },
   {
@@ -103,45 +102,22 @@ export const SAMPLE_RECIPES = [
     image: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80',
     prepTime: '15 mins',
     cookTime: '25 mins',
-    effortLevel: 'Moderate (40 mins)',
+    effortLevel: '30 Mins Cooking',
     effortRating: 2,
     calories: 480,
     protein: '19g',
     carbs: '75g',
     fat: '12g',
     tags: ['High Protein', 'Comfort Food', 'Dinner'],
-    description: 'Tender kidney beans simmered in a slow-cooked spicy onion-tomato gravy, served over steaming hot basmati rice.',
-    ingredientsHave: ['Rajma (Kidney Beans)', 'Rice', 'Onions', 'Tomatoes', 'Ginger Garlic Paste', 'Desi Ghee', 'Garam Masala', 'Dhania Powder', 'Lal Mirch Powder', 'Jeera (Cumin Seeds)'],
+    description: 'Tender kidney beans simmered in a slow-cooked spicy onion-tomato gravy, served over basmati rice.',
+    ingredientsHave: ['Rajma (Kidney Beans)', 'Rice', 'Onions', 'Tomatoes', 'Ginger Garlic Paste', 'Desi Ghee', 'Garam Masala', 'Dhania Powder'],
     ingredientsNeed: ['Kasuri Methi'],
     instructions: [
-      'Soak Rajma overnight or in hot water for 4 hours. Pressure cook with salt and water for 5-6 whistles until melt-in-mouth soft.',
-      'Heat ghee/oil in a heavy pot. Add jeera, chopped onions, and saute till dark golden brown.',
-      'Add ginger garlic paste, tomato puree, haldi, lal mirch, dhania powder, and salt. Cook until oil separates.',
-      'Add cooked rajma along with its stock. Mash a few beans with the back of a spoon to thicken the gravy.',
-      'Simmer on low heat for 15 minutes. Sprinkle garam masala and serve hot over rice.'
-    ]
-  },
-  {
-    id: 'rec-masala-chai-makhana',
-    title: 'Ginger Cardamom Chai with Roasted Masala Makhana',
-    image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80',
-    prepTime: '2 mins',
-    cookTime: '6 mins',
-    effortLevel: 'Ultra Low (8 mins)',
-    effortRating: 1,
-    calories: 160,
-    protein: '5g',
-    carbs: '22g',
-    fat: '6g',
-    tags: ['Low Calorie', 'Quick & Easy', 'Snack', 'Comfort Food'],
-    description: 'Steaming hot fragrant ginger-cardamom tea paired with crunchy foxnuts light-roasted in ghee and mild chaat masala.',
-    ingredientsHave: ['Tea Leaves / Powder', 'Milk', 'Ginger', 'Cardamom (Elaichi)', 'Cheeni (Sugar)', 'Makhana (Fox Nuts)', 'Desi Ghee', 'Kaali Mirch (Black Pepper)', 'Namak (Salt)'],
-    ingredientsNeed: ['Chaat Masala (optional)'],
-    instructions: [
-      'For Chai: Boil 1 cup water with crushed ginger & crushed cardamom. Add tea leaves and sugar, simmer for 2 mins.',
-      'Pour milk, bring to a rolling boil twice, then lower heat and simmer for 2 minutes. Strain into a cup.',
-      'For Makhana: Heat 1 tsp ghee in a pan. Add makhana and roast on low heat for 4-5 mins until super crunchy.',
-      'Sprinkle black pepper, salt, and a dash of red chilli. Munch along with hot chai!'
+      'Soak Rajma overnight. Pressure cook with salt for 5-6 whistles until soft.',
+      'Heat ghee in a pot. Add jeera, chopped onions, and saute till golden brown.',
+      'Add ginger garlic paste, tomato puree, haldi, lal mirch, and dhania powder.',
+      'Add cooked rajma along with its stock. Mash a few beans to thicken gravy.',
+      'Simmer for 15 minutes and serve over steamed rice.'
     ]
   },
   {
@@ -150,7 +126,7 @@ export const SAMPLE_RECIPES = [
     image: 'https://images.unsplash.com/photo-1516714435131-44d6b64dc6a2?auto=format&fit=crop&w=800&q=80',
     prepTime: '5 mins',
     cookTime: '5 mins',
-    effortLevel: 'Zero Cook / Super Low (10 mins)',
+    effortLevel: '0-5 Mins Effort',
     effortRating: 1,
     calories: 290,
     protein: '9g',
@@ -158,14 +134,13 @@ export const SAMPLE_RECIPES = [
     fat: '7g',
     tags: ['Low Calorie', 'Quick & Easy', 'Comfort Food', 'Lunch'],
     description: 'Soothing soft-cooked rice mixed with cold creamy curd, tempered with mustard seeds, curry leaves, and ginger.',
-    ingredientsHave: ['Rice', 'Curd / Yogurt', 'Milk', 'Desi Ghee', 'Jeera (Cumin Seeds)', 'Curry Leaves', 'Ginger', 'Green Chillies', 'Namak (Salt)'],
-    ingredientsNeed: ['Mustard Seeds', 'Pomegranate seeds (optional garnish)'],
+    ingredientsHave: ['Rice', 'Curd / Yogurt', 'Milk', 'Desi Ghee', 'Jeera (Cumin Seeds)', 'Curry Leaves', 'Ginger', 'Green Chillies'],
+    ingredientsNeed: ['Mustard Seeds'],
     instructions: [
-      'Mash warm soft cooked rice gently with a spoon or fork.',
-      'Stir in fresh curd, a splash of cold milk (prevents curd from turning sour), and salt.',
-      'Heat ghee in a small pan. Add jeera, finely minced ginger, chopped green chilli, and curry leaves.',
-      'Pour the fragrant tempering over the curd rice.',
-      'Mix thoroughly and serve cool. Ultra soothing for the stomach!'
+      'Mash warm soft cooked rice gently.',
+      'Stir in fresh curd, a splash of cold milk, and salt.',
+      'Heat ghee in a small pan. Add jeera, minced ginger, chopped green chilli, and curry leaves.',
+      'Pour tempering over curd rice, mix well and serve cool.'
     ]
   },
   {
@@ -174,21 +149,64 @@ export const SAMPLE_RECIPES = [
     image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
     prepTime: '10 mins',
     cookTime: '0 mins',
-    effortLevel: 'Zero Cook / Super Low (10 mins)',
+    effortLevel: '0-5 Mins Effort',
     effortRating: 1,
     calories: 260,
     protein: '15g',
     carbs: '40g',
     fat: '4g',
     tags: ['High Protein', 'Low Calorie', 'Quick & Easy', 'Snack'],
-    description: 'Boiled black chickpeas tossed with crunchy onions, tomatoes, green chillies, lemon juice, and tangy Indian spices.',
-    ingredientsHave: ['Chana (Chickpeas)', 'Onions', 'Tomatoes', 'Green Chillies', 'Jeera (Cumin Seeds)', 'Lal Mirch Powder', 'Namak (Salt)', 'Mint Leaves (Pudina)', 'Coriander Leaves'],
+    description: 'Boiled black chickpeas tossed with crunchy onions, tomatoes, green chillies, and lemon juice.',
+    ingredientsHave: ['Chana (Chickpeas)', 'Onions', 'Tomatoes', 'Green Chillies', 'Jeera (Cumin Seeds)', 'Lal Mirch Powder', 'Namak (Salt)'],
     ingredientsNeed: ['Fresh Lemon'],
     instructions: [
-      'Use pre-boiled or soaked & boiled chickpeas.',
-      'In a mixing bowl, combine boiled chana, finely chopped onions, tomatoes, and green chillies.',
-      'Add roasted jeera powder, red chilli powder, salt, and lemon juice.',
-      'Toss well. Garnish with mint leaves and fresh coriander. Healthy, protein-packed & delicious!'
+      'In a bowl, combine boiled chana, chopped onions, tomatoes, and green chillies.',
+      'Add roasted jeera powder, red chilli powder, salt, and fresh lemon juice.',
+      'Toss well and serve fresh.'
+    ]
+  },
+  {
+    id: 'rec-avocado-paneer-toast',
+    title: 'Crispy Garlic & Paneer Toast',
+    image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
+    prepTime: '5 mins',
+    cookTime: '5 mins',
+    effortLevel: '0-5 Mins Effort',
+    effortRating: 1,
+    calories: 310,
+    protein: '16g',
+    carbs: '28g',
+    fat: '14g',
+    tags: ['High Protein', 'Quick & Easy', 'Breakfast'],
+    description: 'Golden buttered toast topped with grated spiced paneer, minced garlic, and black pepper.',
+    ingredientsHave: ['Bread / Buns', 'Paneer (Cottage Cheese)', 'Butter', 'Garlic', 'Kaali Mirch (Black Pepper)', 'Namak (Salt)'],
+    ingredientsNeed: ['Chili Flakes'],
+    instructions: [
+      'Grate fresh paneer into a bowl, toss with salt, black pepper, and minced garlic.',
+      'Toast bread slices on a tawa with butter.',
+      'Heap spiced paneer on top, press gently, and toast for 1 minute until fragrant.'
+    ]
+  },
+  {
+    id: 'rec-masala-oats',
+    title: 'Instant Vegetable Masala Oats',
+    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?auto=format&fit=crop&w=800&q=80',
+    prepTime: '3 mins',
+    cookTime: '6 mins',
+    effortLevel: '0-5 Mins Effort',
+    effortRating: 1,
+    calories: 220,
+    protein: '9g',
+    carbs: '36g',
+    fat: '5g',
+    tags: ['Low Calorie', 'Quick & Easy', 'Breakfast'],
+    description: 'Savory rolled oats cooked with onions, tomatoes, green chillies, and turmeric.',
+    ingredientsHave: ['Oats', 'Onions', 'Tomatoes', 'Green Chillies', 'Haldi (Turmeric Powder)', 'Groundnut Oil'],
+    ingredientsNeed: ['Green Peas'],
+    instructions: [
+      'Heat oil in a pan, saute onions and chillies for 2 mins.',
+      'Add tomatoes, haldi, salt, and 1.5 cups water. Bring to boil.',
+      'Stir in oats and cook for 3 minutes until thick and creamy.'
     ]
   }
 ];
