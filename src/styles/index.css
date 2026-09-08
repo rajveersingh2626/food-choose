@@ -64,7 +64,13 @@ h1, h2, h3, h4 {
   max-width: 1240px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 20px 120px 20px;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(110px, calc(95px + env(safe-area-inset-bottom))) 16px;
+}
+
+@media (min-width: 768px) {
+  .app-wrapper {
+    padding: 24px 20px 120px 20px;
+  }
 }
 
 .main-layout {
@@ -324,22 +330,29 @@ select:focus {
 /* ─── Mobile Bottom Nav ─── */
 .mobile-bottom-nav {
   position: fixed;
-  bottom: 16px;
+  bottom: max(12px, env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 32px);
+  width: calc(100% - 24px);
   max-width: 480px;
   background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 30px;
-  padding: 8px 12px;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--card-border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 32px;
+  padding: 8px 10px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(231, 130, 154, 0.2);
+  border: 1.5px solid rgba(231, 130, 154, 0.22);
   display: flex;
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
+  touch-action: manipulation;
+}
+
+.mobile-bottom-nav button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 /* ─── API Key Banner ─── */
@@ -391,12 +404,56 @@ select:focus {
 .time-pill.cook { background: #FEF3C7; color: #D97706; }
 .time-pill.total { background: #E4F1E7; color: #2E7D32; }
 
-/* ─── Mobile helpers ─── */
-@media (max-width: 480px) {
+/* ─── Mobile & Tablet Responsive Polish ─── */
+@media (max-width: 640px) {
   .hide-mobile { display: none !important; }
   .show-mobile { display: inline !important; }
+
+  .card {
+    padding: 16px 14px;
+    border-radius: 16px;
+  }
+
+  /* Sticky modal tweaks on phones */
+  .modal-hero {
+    height: 200px;
+  }
+
+  /* Form inputs & buttons touch targets */
+  input[type="text"],
+  input[type="password"],
+  textarea,
+  select,
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline {
+    font-size: 16px; /* Prevents iOS auto-zoom on input focus */
+  }
 }
 
-@media (min-width: 481px) {
+@media (min-width: 641px) and (max-width: 899px) {
+  .hide-mobile { display: inline !important; }
+  .show-mobile { display: none !important; }
+
+  .card {
+    padding: 18px;
+  }
+}
+
+@media (min-width: 900px) {
   .show-mobile { display: none !important; }
 }
+
+/* Touch & Scroll Utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+button, a, input, select, textarea, .chip {
+  touch-action: manipulation;
+}
+

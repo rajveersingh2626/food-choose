@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from './components/Header.jsx';
 import Navigation from './components/Navigation.jsx';
 import PantryManager from './components/PantryManager.jsx';
@@ -7,14 +7,30 @@ import MoodChat from './components/MoodChat.jsx';
 import RecipeLibrary from './components/RecipeLibrary.jsx';
 import RecipeModal from './components/RecipeModal.jsx';
 import ApiKeyModal from './components/ApiKeyModal.jsx';
+import PwaInstallPrompt from './components/PwaInstallPrompt.jsx';
 import { IconSparkles } from './components/Icons.jsx';
 import { SUHANU_INITIAL_PANTRY, GROCERY_PRESETS } from './data/suhanuInitialPantry.js';
 
+// Parse active tab and recipe from URL hash for subpage routing
+function parseHashRoute() {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  const parts = hash.split('/');
+  const tab = parts[0] || 'mood';
+  const validTabs = ['mood', 'planner', 'recipes', 'pantry'];
+  const activeTab = validTabs.includes(tab) ? tab : 'mood';
+  const isRecipeModal = parts[1] === 'recipe';
+  const recipeId = isRecipeModal ? decodeURIComponent(parts[2] || '') : null;
+  return { activeTab, recipeId };
+}
+
 export default function App() {
-  // Default to "Ask AI Chef" (mood)
-  const [activeTab, setActiveTab] = useState('mood');
+  // Initialize subpage tab from URL hash if present
+  const [activeTab, setActiveTab] = useState(() => {
+    return parseHashRoute().activeTab;
+  });
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
 
   // Gemini API key — prioritize .env, fallback to localStorage
   const [apiKey, setApiKey] = useState(() => {
@@ -58,6 +74,50 @@ export default function App() {
     localStorage.setItem('suhanu_active_pantry_preset', activePresetId);
   }, [activePresetId]);
 
+  // Synchronize URL Hash Subpages & Hardware Back Button
+  useEffect(() => {
+    const handleHashChange = () => {
+      const { activeTab: newTab, recipeId } = parseHashRoute();
+      setActiveTab(newTab);
+      // If user hit Back and closed recipe modal
+      if (!recipeId) {
+        setSelectedRecipe(null);
+      }
+    };
+
+    if (!window.location.hash) {
+      window.location.hash = `#/${activeTab}`;
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [activeTab]);
+
+  // Navigate to a new subpage
+  const handleTabChange = useCallback((tabId) => {
+    setActiveTab(tabId);
+    setSelectedRecipe(null);
+    window.location.hash = `#/${tabId}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  // Open recipe modal with deep-linking support
+  const handleOpenRecipe = useCallback((recipe) => {
+    setSelectedRecipe(recipe);
+    if (recipe?.title) {
+      const safeTitle = encodeURIComponent(recipe.title.replace(/\s+/g, '-'));
+      window.location.hash = `#/${activeTab}/recipe/${safeTitle}`;
+    }
+  }, [activeTab]);
+
+  // Close recipe modal & restore tab hash
+  const handleCloseRecipe = useCallback(() => {
+    setSelectedRecipe(null);
+    if (window.location.hash.includes('/recipe/')) {
+      window.location.hash = `#/${activeTab}`;
+    }
+  }, [activeTab]);
+
   const handleResetToDefault = () => {
     setPantryItems(SUHANU_INITIAL_PANTRY);
     localStorage.setItem('suhanu_pantry_items_v4', JSON.stringify(SUHANU_INITIAL_PANTRY));
@@ -77,6 +137,7 @@ export default function App() {
       <Header
         apiOk={apiOk}
         onOpenApiKeyModal={() => setIsKeyModalOpen(true)}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
         activePresetId={activePresetId}
         onSelectPreset={setActivePresetId}
         pantryItems={pantryItems}
@@ -84,7 +145,7 @@ export default function App() {
       />
 
       <div className="main-layout">
-        <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+        <Navigation activeTab={activeTab} setActiveTab={handleTabChange} />
 
         <main className="main-content">
           {/* API Key prompt banner — shown if offline */}
@@ -127,7 +188,7 @@ export default function App() {
             <MoodChat
               pantryItems={activePantryItems}
               apiKey={apiKey}
-              onSelectRecipe={(recipe) => setSelectedRecipe(recipe)}
+              onSelectRecipe={handleOpenRecipe}
             />
           )}
 
@@ -135,7 +196,7 @@ export default function App() {
             <WeeklyPlanner
               pantryItems={activePantryItems}
               apiKey={apiKey}
-              onSelectRecipe={(recipe) => setSelectedRecipe(recipe)}
+              onSelectRecipe={handleOpenRecipe}
             />
           )}
 
@@ -143,7 +204,7 @@ export default function App() {
             <RecipeLibrary
               pantryItems={activePantryItems}
               apiKey={apiKey}
-              onSelectRecipe={(recipe) => setSelectedRecipe(recipe)}
+              onSelectRecipe={handleOpenRecipe}
             />
           )}
 
@@ -162,7 +223,7 @@ export default function App() {
       {/* Recipe Details Modal */}
       <RecipeModal
         recipe={selectedRecipe}
-        onClose={() => setSelectedRecipe(null)}
+        onClose={handleCloseRecipe}
         pantryItems={activePantryItems}
       />
 
@@ -173,6 +234,14 @@ export default function App() {
         currentKey={apiKey}
         onSaveKey={handleSaveApiKey}
       />
+
+      {/* PWA Install Modal */}
+      {isInstallModalOpen && (
+        <PwaInstallPrompt
+          onClose={() => setIsInstallModalOpen(false)}
+          onInstalled={() => setIsInstallModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

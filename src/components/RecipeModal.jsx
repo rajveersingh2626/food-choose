@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getFoodPhotoUrl } from '../services/geminiService.js';
 import FoodImage from './FoodImage.jsx';
 import {
@@ -11,7 +11,8 @@ import {
   IconUtensils,
   IconShoppingBag,
   IconCheckCircle,
-  IconDumbbell
+  IconDumbbell,
+  IconArrowLeft
 } from './Icons.jsx';
 
 export default function RecipeModal({ recipe, onClose, pantryItems = [] }) {
@@ -20,6 +21,22 @@ export default function RecipeModal({ recipe, onClose, pantryItems = [] }) {
   const [completedSteps, setCompletedSteps] = useState({});
   const [checkedIngredients, setCheckedIngredients] = useState({});
   const [copyToast, setCopyToast] = useState(false);
+
+  // Lock background scroll while modal is active & listen to Escape key
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   const toggleStep = (idx) => {
     setCompletedSteps(prev => ({ ...prev, [idx]: !prev[idx] }));
@@ -79,48 +96,95 @@ export default function RecipeModal({ recipe, onClose, pantryItems = [] }) {
           borderRadius: '28px 28px 0 0',
           overflowY: 'auto',
           position: 'relative',
-          boxShadow: '0 -20px 60px rgba(0,0,0,0.25)'
+          boxShadow: '0 -20px 60px rgba(0,0,0,0.25)',
+          WebkitOverflowScrolling: 'touch'
         }}
       >
-        {/* Hero Image */}
-        <div className="modal-hero" style={{ borderRadius: '28px 28px 0 0', height: '260px', position: 'relative', overflow: 'hidden' }}>
-          <FoodImage
-            src={getFoodPhotoUrl(recipe.title, recipe.photoSearchQuery)}
-            alt={recipe.title}
-            title={recipe.title}
-            query={recipe.photoSearchQuery}
-            height="260px"
-          />
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%)'
-          }} />
-
-          {/* Close button */}
+        {/* Sticky Mobile/Tablet Navigation Bar */}
+        <div style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 40,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 16px',
+          background: 'rgba(255, 255, 255, 0.94)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(0,0,0,0.06)',
+          borderRadius: '28px 28px 0 0'
+        }}>
           <button
+            type="button"
             onClick={onClose}
             style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              width: '38px',
-              height: '38px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              borderRadius: '999px',
+              background: '#F4F4F6',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              fontWeight: '700',
+              color: '#1F2421',
+              transition: 'background 0.15s ease'
+            }}
+          >
+            <IconArrowLeft size={15} />
+            <span>Back</span>
+          </button>
+
+          <span style={{
+            fontSize: '0.84rem',
+            fontWeight: '800',
+            color: '#1F2421',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: '220px',
+            padding: '0 8px'
+          }}>
+            {recipe.title}
+          </span>
+
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              width: '34px',
+              height: '34px',
               borderRadius: '50%',
-              background: 'rgba(255,255,255,0.92)',
-              backdropFilter: 'blur(8px)',
+              background: '#F4F4F6',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
-              zIndex: 10
+              transition: 'background 0.15s ease'
             }}
-            aria-label="Close recipe"
+            aria-label="Close"
           >
-            <IconClose size={18} color="#1F2421" />
+            <IconClose size={16} color="#1F2421" />
           </button>
+        </div>
+
+        {/* Hero Image */}
+        <div className="modal-hero" style={{ height: '240px', position: 'relative', overflow: 'hidden' }}>
+          <FoodImage
+            src={getFoodPhotoUrl(recipe.title, recipe.photoSearchQuery)}
+            alt={recipe.title}
+            title={recipe.title}
+            query={recipe.photoSearchQuery}
+            height="240px"
+          />
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.8) 100%)'
+          }} />
 
           {/* Title overlay on photo */}
           <div style={{

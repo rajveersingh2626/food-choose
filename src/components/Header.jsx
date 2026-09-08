@@ -1,10 +1,11 @@
 import React from 'react';
-import { IconSliders } from './Icons.jsx';
+import { IconSliders, IconSmartphone } from './Icons.jsx';
 import PantryContextSelector from './PantryContextSelector.jsx';
 
 export default function Header({
   apiOk,
   onOpenApiKeyModal,
+  onOpenInstallModal,
   activePresetId,
   onSelectPreset,
   pantryItems,
@@ -43,14 +44,40 @@ export default function Header({
           </div>
         </div>
 
-        {/* Right Controls: Pantry Context Selector + AI Key Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        {/* Right Controls: Pantry Context Selector + Install App + AI Key Button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <PantryContextSelector
             activePresetId={activePresetId}
             onSelectPreset={onSelectPreset}
             pantryItems={pantryItems}
             activePantryItems={activePantryItems}
           />
+
+          {/* Install PWA Button */}
+          <button
+            type="button"
+            onClick={onOpenInstallModal}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '7px 14px',
+              borderRadius: '999px',
+              background: '#FAF5FF',
+              border: '1.5px solid #E9D5FF',
+              fontSize: '0.76rem',
+              fontWeight: '700',
+              color: '#7E22CE',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+            }}
+            title="Install app to your home screen"
+          >
+            <IconSmartphone size={13} color="#7E22CE" />
+            <span>Install App</span>
+          </button>
 
           {/* AI Status Pill (Interactive button to configure key) */}
           <button

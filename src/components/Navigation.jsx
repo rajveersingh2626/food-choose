@@ -71,6 +71,12 @@ export default function Navigation({ activeTab, setActiveTab }) {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
+          const shortLabels = {
+            mood: 'Chef',
+            planner: 'Week',
+            recipes: 'Explore',
+            pantry: 'Pantry'
+          };
           return (
             <button
               key={item.id}
@@ -79,20 +85,21 @@ export default function Navigation({ activeTab, setActiveTab }) {
                 background: isActive ? 'var(--primary-light)' : 'transparent',
                 border: 'none',
                 borderRadius: '20px',
-                padding: isActive ? '8px 14px' : '8px 10px',
+                padding: isActive ? '7px 12px' : '7px 10px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '5px',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 color: isActive ? 'var(--primary)' : 'var(--text-muted)',
-                fontWeight: isActive ? '700' : '500',
-                fontSize: '0.8rem',
-                fontFamily: 'inherit'
+                fontWeight: isActive ? '800' : '500',
+                fontSize: '0.78rem',
+                fontFamily: 'inherit',
+                minHeight: '40px'
               }}
             >
-              <Icon size={19} color={isActive ? 'var(--primary)' : 'var(--text-muted)'} />
-              {isActive && <span style={{ whiteSpace: 'nowrap' }}>{item.label.split(' ')[0]}</span>}
+              <Icon size={18} color={isActive ? 'var(--primary)' : 'var(--text-muted)'} />
+              {isActive && <span style={{ whiteSpace: 'nowrap' }}>{shortLabels[item.id] || item.label}</span>}
             </button>
           );
         })}

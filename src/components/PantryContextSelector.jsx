@@ -82,7 +82,7 @@ export default function PantryContextSelector({
           <IconBasket size={12} color="var(--primary)" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <span style={{ color: '#6B7280', fontWeight: '600' }}>Active Pantry:</span>
+          <span style={{ color: '#6B7280', fontWeight: '600' }} className="hide-mobile">Active Pantry:</span>
           <span style={{ color: 'var(--primary)', fontWeight: '800' }}>{currentOption.name}</span>
           <span style={{
             background: '#F0FDF4',
@@ -105,8 +105,9 @@ export default function PantryContextSelector({
           style={{
             position: 'absolute',
             top: 'calc(100% + 8px)',
-            left: 0,
+            right: 0,
             width: '320px',
+            maxWidth: 'calc(100vw - 32px)',
             background: 'white',
             borderRadius: '16px',
             boxShadow: '0 12px 36px rgba(0,0,0,0.16)',
