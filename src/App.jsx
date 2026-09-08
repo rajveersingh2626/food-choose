@@ -6,29 +6,48 @@ import WeeklyPlanner from './components/WeeklyPlanner.jsx';
 import MoodChat from './components/MoodChat.jsx';
 import RecipeLibrary from './components/RecipeLibrary.jsx';
 import RecipeModal from './components/RecipeModal.jsx';
-import SettingsModal from './components/SettingsModal.jsx';
-import { SUHANU_INITIAL_PANTRY } from './data/suhanuInitialPantry.js';
+import ApiKeyModal from './components/ApiKeyModal.jsx';
+import { IconSparkles } from './components/Icons.jsx';
+import { SUHANU_INITIAL_PANTRY, GROCERY_PRESETS } from './data/suhanuInitialPantry.js';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('pantry'); // Default is Pantry & Groceries
+  // Default to "Ask AI Chef" (mood)
+  const [activeTab, setActiveTab] = useState('mood');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
 
-  // Read Gemini API key securely from environment variable (.env) or localStorage
+  // Gemini API key — prioritize .env, fallback to localStorage
   const [apiKey, setApiKey] = useState(() => {
-    return localStorage.getItem('suhanu_gemini_key') || import.meta.env.VITE_GEMINI_API_KEY || '';
+    const envKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (envKey && envKey.trim()) {
+      localStorage.setItem('suhanu_gemini_key', envKey.trim());
+      return envKey.trim();
+    }
+    return localStorage.getItem('suhanu_gemini_key') || '';
   });
 
+  const handleSaveApiKey = (newKey) => {
+    setApiKey(newKey);
+    if (newKey) {
+      localStorage.setItem('suhanu_gemini_key', newKey);
+    } else {
+      localStorage.removeItem('suhanu_gemini_key');
+    }
+  };
+
+  // User's custom pantry state — persistent in localStorage
   const [pantryItems, setPantryItems] = useState(() => {
     const saved = localStorage.getItem('suhanu_pantry_items_v4');
     if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return SUHANU_INITIAL_PANTRY;
-      }
+      try { return JSON.parse(saved); }
+      catch (e) { return SUHANU_INITIAL_PANTRY; }
     }
     return SUHANU_INITIAL_PANTRY;
+  });
+
+  // Active Pantry Context profile — allows user to select which pantry context is active across the site
+  const [activePresetId, setActivePresetId] = useState(() => {
+    return localStorage.getItem('suhanu_active_pantry_preset') || 'custom';
   });
 
   useEffect(() => {
@@ -36,48 +55,85 @@ export default function App() {
   }, [pantryItems]);
 
   useEffect(() => {
-    if (apiKey) {
-      localStorage.setItem('suhanu_gemini_key', apiKey);
-    }
-  }, [apiKey]);
+    localStorage.setItem('suhanu_active_pantry_preset', activePresetId);
+  }, [activePresetId]);
 
   const handleResetToDefault = () => {
     setPantryItems(SUHANU_INITIAL_PANTRY);
     localStorage.setItem('suhanu_pantry_items_v4', JSON.stringify(SUHANU_INITIAL_PANTRY));
   };
 
+  // Derive active pantry items based on user's active context selection
+  const activePantryItems = React.useMemo(() => {
+    if (activePresetId === 'custom') return pantryItems;
+    const preset = GROCERY_PRESETS.find(p => p.id === activePresetId);
+    return preset ? preset.items : pantryItems;
+  }, [activePresetId, pantryItems]);
+
+  const apiOk = Boolean(apiKey && apiKey.trim().length > 15);
+
   return (
     <div className="app-wrapper">
-      {/* Top Banner Header - Spans full width */}
-      <Header />
+      <Header
+        apiOk={apiOk}
+        onOpenApiKeyModal={() => setIsKeyModalOpen(true)}
+        activePresetId={activePresetId}
+        onSelectPreset={setActivePresetId}
+        pantryItems={pantryItems}
+        activePantryItems={activePantryItems}
+      />
 
-      {/* Main 2-Column Layout */}
       <div className="main-layout">
-        <Navigation
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+        <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <main className="main-content">
-          {activeTab === 'pantry' && (
-            <PantryManager
-              pantryItems={pantryItems}
-              setPantryItems={setPantryItems}
-              onResetToDefault={handleResetToDefault}
-            />
+          {/* API Key prompt banner — shown if offline */}
+          {!apiOk && (
+            <div className="api-key-banner mb-4" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  background: '#FEF3C7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#D97706'
+                }}>
+                  <IconSparkles size={18} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: '700', fontSize: '0.88rem', color: '#92400E', marginBottom: '2px' }}>
+                    Connect Your Free Gemini AI Key
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: '#B45309' }}>
+                    Unlock real-time personalized AI recipe creation in 30 seconds (no credit card needed).
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsKeyModalOpen(true)}
+                className="btn-primary"
+                style={{ padding: '8px 16px', fontSize: '0.82rem' }}
+              >
+                Connect Free AI Key
+              </button>
+            </div>
           )}
 
-          {activeTab === 'planner' && (
-            <WeeklyPlanner
-              pantryItems={pantryItems}
+          {activeTab === 'mood' && (
+            <MoodChat
+              pantryItems={activePantryItems}
               apiKey={apiKey}
               onSelectRecipe={(recipe) => setSelectedRecipe(recipe)}
             />
           )}
 
-          {activeTab === 'mood' && (
-            <MoodChat
-              pantryItems={pantryItems}
+          {activeTab === 'planner' && (
+            <WeeklyPlanner
+              pantryItems={activePantryItems}
               apiKey={apiKey}
               onSelectRecipe={(recipe) => setSelectedRecipe(recipe)}
             />
@@ -85,26 +141,37 @@ export default function App() {
 
           {activeTab === 'recipes' && (
             <RecipeLibrary
-              pantryItems={pantryItems}
+              pantryItems={activePantryItems}
               apiKey={apiKey}
               onSelectRecipe={(recipe) => setSelectedRecipe(recipe)}
+            />
+          )}
+
+          {activeTab === 'pantry' && (
+            <PantryManager
+              pantryItems={pantryItems}
+              setPantryItems={setPantryItems}
+              onResetToDefault={handleResetToDefault}
+              activePresetId={activePresetId}
+              onSelectPreset={setActivePresetId}
             />
           )}
         </main>
       </div>
 
+      {/* Recipe Details Modal */}
       <RecipeModal
         recipe={selectedRecipe}
         onClose={() => setSelectedRecipe(null)}
-        pantryItems={pantryItems}
+        pantryItems={activePantryItems}
       />
 
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        apiKey={apiKey}
-        setApiKey={setApiKey}
-        onResetAll={handleResetToDefault}
+      {/* Gemini API Key Configuration Modal */}
+      <ApiKeyModal
+        isOpen={isKeyModalOpen}
+        onClose={() => setIsKeyModalOpen(false)}
+        currentKey={apiKey}
+        onSaveKey={handleSaveApiKey}
       />
     </div>
   );

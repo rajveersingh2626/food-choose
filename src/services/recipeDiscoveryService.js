@@ -1,5 +1,3 @@
-import { SAMPLE_RECIPES } from '../data/sampleRecipes.js';
-
 const DISCOVERY_IMAGES = [
   'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
   'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
@@ -11,53 +9,64 @@ const DISCOVERY_IMAGES = [
 
 export async function fetchMoreInfiniteRecipes(existingCount, apiKey) {
   if (apiKey && apiKey.trim() !== '') {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s — Gemini needs 8-15s
+
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `Generate 3 unique, delicious, healthy Indian or fusion recipes. Return strictly JSON format without markdown codeblocks:
+              text: `Generate 3 unique, delicious, healthy Indian or fusion recipes for Suhanu. Return ONLY a valid JSON array (no extra text, no markdown code blocks):
 [
   {
-    "id": "rec-auto-${Date.now()}-1",
-    "title": "Dish Name",
+    "id": "r1",
+    "title": "Creative Dish Name",
     "prepTime": "5 mins",
     "cookTime": "10 mins",
-    "effortLevel": "0-5 Mins Effort",
+    "effortLevel": "15 Mins Effort",
     "calories": 300,
     "protein": "15g",
     "carbs": "35g",
     "fat": "8g",
     "tags": ["High Protein", "Quick & Easy"],
-    "description": "Short delicious description",
-    "ingredientsHave": ["Ingredient 1", "Ingredient 2"],
-    "ingredientsNeed": ["Extra 1"],
-    "instructions": ["Step 1", "Step 2", "Step 3"]
-  }
+    "description": "An enticing one-sentence description of the dish",
+    "ingredientsHave": ["Main Ingredient", "Spice"],
+    "ingredientsNeed": ["Optional extra"],
+    "instructions": ["Step 1: Prep", "Step 2: Cook", "Step 3: Serve"]
+  },
+  { "id": "r2", "title": "...", "prepTime": "...", "cookTime": "...", "effortLevel": "...", "calories": 0, "protein": "...", "carbs": "...", "fat": "...", "tags": [], "description": "...", "ingredientsHave": [], "ingredientsNeed": [], "instructions": [] },
+  { "id": "r3", "title": "...", "prepTime": "...", "cookTime": "...", "effortLevel": "...", "calories": 0, "protein": "...", "carbs": "...", "fat": "...", "tags": [], "description": "...", "ingredientsHave": [], "ingredientsNeed": [], "instructions": [] }
 ]`
             }]
           }]
         })
       });
 
-      const data = await response.json();
-      let rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (rawText) {
-        rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-        const parsed = JSON.parse(rawText);
-        return parsed.map((item, idx) => ({
-          ...item,
-          image: DISCOVERY_IMAGES[(existingCount + idx) % DISCOVERY_IMAGES.length]
-        }));
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        let rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (rawText) {
+          rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+          const parsed = JSON.parse(rawText);
+          return parsed.map((item, idx) => ({
+            ...item,
+            image: DISCOVERY_IMAGES[(existingCount + idx) % DISCOVERY_IMAGES.length]
+          }));
+        }
       }
     } catch (err) {
-      console.warn('Live discovery failed, using dynamic generator:', err);
+      clearTimeout(timeoutId);
+      console.warn('Live discovery error/timeout:', err);
     }
   }
 
-  // Dynamic Offline Generator for continuous infinite scrolling
+  // Dynamic Generator for continuous infinite scrolling
   const syntheticTitles = [
     { title: 'Tofu & Veggie Garlic Stir-fry', protein: '18g', calories: 270, tag: 'High Protein', time: '10 mins' },
     { title: 'Spiced Moong Dal Chilla Roll', protein: '16g', calories: 250, tag: 'Low Calorie', time: '12 mins' },

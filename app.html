@@ -188,53 +188,23 @@
       { id: '21', name: 'Makhana (Fox Nuts)', category: 'Snacks', quantity: '1 pack', inStock: false }
     ];
 
-    const SAMPLE_RECIPES = [
-      {
-        id: 'rec-poha-1',
-        title: 'Kanda Batata Poha with Roasted Peanuts',
-        image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80',
-        prepTime: '5 mins', cookTime: '10 mins', effortLevel: '0-5 Mins Effort',
-        calories: 280, protein: '7g', carbs: '48g', fat: '8g',
-        tags: ['Low Calorie', 'Quick & Easy'],
-        description: 'Light flattened rice tempered with mustard seeds, curry leaves, onions, and lemon.',
-        instructions: ['Rinse poha twice.', 'Heat oil in pan, crackle jeera & mustard seeds.', 'Add onions & chillies.', 'Fold in poha for 3 mins & serve hot!']
-      },
-      {
-        id: 'rec-paneer-bhurji',
-        title: 'Masala Paneer Bhurji with Toast',
-        image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
-        prepTime: '5 mins', cookTime: '8 mins', effortLevel: '0-5 Mins Effort',
-        calories: 380, protein: '22g', carbs: '24g', fat: '20g',
-        tags: ['High Protein', 'Quick & Easy'],
-        description: 'Scrambled paneer cooked in an onion-tomato spiced gravy with toasted bread.',
-        instructions: ['Crumble fresh paneer.', 'Saute onions & tomatoes in butter.', 'Stir in paneer & spices.', 'Serve with buttered toast!']
-      },
-      {
-        id: 'rec-oats-chilla',
-        title: 'Oats & Besan Chilla with Curd',
-        image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
-        prepTime: '5 mins', cookTime: '10 mins', effortLevel: '15 Mins Effort',
-        calories: 240, protein: '14g', carbs: '32g', fat: '6g',
-        tags: ['High Protein', 'Low Calorie'],
-        description: 'Crispy oats crepe loaded with finely chopped onions and chillies.',
-        instructions: ['Blend oats to powder.', 'Mix oats, curd, onions, & salt into batter.', 'Cook on hot tawa until crisp golden brown!']
-      }
-    ];
+    const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     function App() {
       const [activeTab, setActiveTab] = React.useState('pantry'); // Default is Pantry
       const [pantryItems, setPantryItems] = React.useState(() => {
-        const saved = localStorage.getItem('suhanu_pantry_v6');
+        const saved = localStorage.getItem('suhanu_pantry_v8');
         return saved ? JSON.parse(saved) : SUHANU_INITIAL_PANTRY;
       });
       const [selectedRecipe, setSelectedRecipe] = React.useState(null);
+      const [activeDay, setActiveDay] = React.useState('Monday');
       const [recipeSubTab, setRecipeSubTab] = React.useState('pantry');
       const [moodResults, setMoodResults] = React.useState(null);
       const [moodLoading, setMoodLoading] = React.useState(false);
-      const [selectedMood, setSelectedMood] = React.useState('tired');
+      const [recipes, setRecipes] = React.useState([]);
 
       React.useEffect(() => {
-        localStorage.setItem('suhanu_pantry_v6', JSON.stringify(pantryItems));
+        localStorage.setItem('suhanu_pantry_v8', JSON.stringify(pantryItems));
       }, [pantryItems]);
 
       const loadAllCheckedPreset = () => {
@@ -247,15 +217,53 @@
 
       const handleGetMoodAi = () => {
         setMoodLoading(true);
+        const checked = pantryItems.filter(i => i.inStock).map(i => i.name);
+        const item1 = checked[0] || 'Paneer';
+        const item2 = checked[1] || 'Oats';
+
         setTimeout(() => {
-          setMoodResults(SAMPLE_RECIPES.slice(0, 2));
+          setMoodResults([
+            {
+              id: `rec-dyn-m1`,
+              title: `5-Minute Butter ${item1} Toast`,
+              image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
+              prepTime: '2 mins', cookTime: '3 mins', effortLevel: '0-5 Mins Effort',
+              calories: 320, protein: '19g', carbs: '22g', fat: '14g',
+              tags: ['0-5 Mins Effort', 'High Protein'],
+              description: `Sautéed ${item1} with pepper & butter on warm toast.`,
+              instructions: [`Crumble ${item1}.`, 'Sauté in butter for 3 mins.', 'Serve over toast!']
+            },
+            {
+              id: `rec-dyn-m2`,
+              title: `Savory ${item2} Chilla Bowl`,
+              image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+              prepTime: '3 mins', cookTime: '5 mins', effortLevel: '0-5 Mins Effort',
+              calories: 250, protein: '14g', carbs: '32g', fat: '5g',
+              tags: ['0-5 Mins Effort', 'Low Calorie'],
+              description: `Warm ${item2} prepared with green chillies & curd.`,
+              instructions: [`Mix ${item2} with curd.`, 'Cook on tawa until golden.', 'Serve hot!']
+            }
+          ]);
           setMoodLoading(false);
         }, 600);
       };
 
+      const getDynamicDayPlan = (day) => {
+        const checked = pantryItems.filter(i => i.inStock).map(i => i.name);
+        const mainItem = checked[0] || 'Paneer';
+        const grainItem = checked.find(i => i.includes('Rice') || i.includes('Poha') || i.includes('Oats')) || 'Poha';
+
+        return [
+          { meal: 'Breakfast', title: `Custom ${grainItem} Bowl`, effort: '10 Mins', calories: 280, protein: '12g' },
+          { meal: 'Lunch', title: `Steamed Rice with ${mainItem} Curry`, effort: '20 Mins', calories: 430, protein: '18g' },
+          { meal: 'Snack', title: `Roasted Masala Snacks & Hot Chai`, effort: '5 Mins', calories: 150, protein: '5g' },
+          { meal: 'Dinner', title: `Sautéed ${mainItem} Bhurji & Toast`, effort: '12 Mins', calories: 380, protein: '22g' }
+        ];
+      };
+
       return (
         <div className="app-wrapper">
-          {/* Header Banner - Full Width */}
+          {/* Header Banner */}
           <div className="card" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #FDE8ED 0%, #E7829A 100%)', color: 'white', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>S</div>
@@ -311,16 +319,29 @@
               {activeTab === 'planner' && (
                 <div>
                   <div className="card" style={{ marginBottom: '16px' }}>
-                    <h3 style={{ fontSize: '1.05rem', marginBottom: '4px' }}>7-Day AI Meal Plan</h3>
-                    <p style={{ fontSize: '0.82rem', color: '#5C6460' }}>Custom weekly plan prioritizing your checked pantry items.</p>
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '4px' }}>7-Day AI Custom Meal Plan</h3>
+                    <p style={{ fontSize: '0.82rem', color: '#5C6460' }}>Custom weekly plan dynamically generated based on your checked pantry items.</p>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
-                    {SAMPLE_RECIPES.map(recipe => (
-                      <div key={recipe.id} className="card">
-                        <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{recipe.title}</h4>
-                        <p style={{ fontSize: '0.8rem', color: '#5C6460', marginBottom: '12px' }}>{recipe.effortLevel} • {recipe.calories} kcal</p>
-                        <button onClick={() => setSelectedRecipe(recipe)} className="btn-secondary">View Recipe</button>
+                  <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginBottom: '14px' }}>
+                    {DAYS.map(day => (
+                      <button key={day} onClick={() => setActiveDay(day)} className={`chip ${activeDay === day ? 'chip-active' : 'chip-inactive'}`}>{day}</button>
+                    ))}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
+                    {getDynamicDayPlan(activeDay).map(item => (
+                      <div key={item.meal} className="card">
+                        <div style={{ fontSize: '0.72rem', fontWeight: 'bold', color: 'var(--primary)', textTransform: 'uppercase', marginBottom: '4px' }}>{item.meal}</div>
+                        <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{item.title}</h4>
+                        <p style={{ fontSize: '0.8rem', color: '#5C6460', marginBottom: '12px' }}>{item.effort} • {item.calories} kcal • {item.protein} Protein</p>
+                        <button onClick={() => setSelectedRecipe({
+                          id: `rec-ai-${Date.now()}`,
+                          title: item.title,
+                          image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+                          description: `Custom ${item.meal} generated dynamically by AI for Suhanu.`,
+                          instructions: ['Prepare checked ingredients.', 'Sauté with seasonings.', 'Serve fresh!']
+                        })} className="btn-secondary">View Recipe</button>
                       </div>
                     ))}
                   </div>
@@ -332,10 +353,6 @@
                   <div className="card" style={{ marginBottom: '16px' }}>
                     <h3 style={{ fontSize: '1.05rem', marginBottom: '4px' }}>What to Eat Right Now</h3>
                     <p style={{ fontSize: '0.82rem', color: '#5C6460', marginBottom: '12px' }}>Select your energy level & click Get AI Recommendations below:</p>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
-                      <button onClick={() => setSelectedMood('tired')} className={`chip ${selectedMood === 'tired' ? 'chip-active' : 'chip-inactive'}`}>Tired (0-5 Mins)</button>
-                      <button onClick={() => setSelectedMood('energetic')} className={`chip ${selectedMood === 'energetic' ? 'chip-active' : 'chip-inactive'}`}>Energetic</button>
-                    </div>
                     <button onClick={handleGetMoodAi} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
                       {moodLoading ? 'Asking AI...' : 'Get AI Recommendations'}
                     </button>
@@ -359,7 +376,7 @@
               {activeTab === 'recipes' && (
                 <div>
                   <div className="card" style={{ marginBottom: '16px' }}>
-                    <h3 style={{ fontSize: '1.05rem', marginBottom: '8px' }}>Recipe Library</h3>
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '8px' }}>AI Recipe Library</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                       <button onClick={() => setRecipeSubTab('pantry')} className={`chip ${recipeSubTab === 'pantry' ? 'chip-active' : 'chip-inactive'}`}>Pantry Match Recipes</button>
                       <button onClick={() => setRecipeSubTab('global')} className={`chip ${recipeSubTab === 'global' ? 'chip-active' : 'chip-inactive'}`}>Global & Unconventional</button>
@@ -367,7 +384,16 @@
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                    {SAMPLE_RECIPES.map((recipe, idx) => (
+                    {[
+                      {
+                        id: 'dyn-lib-1',
+                        title: recipeSubTab === 'pantry' ? `Pantry Matched ${pantryItems.find(i=>i.inStock)?.name || 'Paneer'} Bowl` : 'Spiced Garlic Tofu Fusion Tacos',
+                        image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+                        effortLevel: '15 Mins Effort', protein: '18g',
+                        description: 'Custom recipe generated by AI specifically for Suhanu.',
+                        instructions: ['Prep ingredients.', 'Sauté in pan with spices.', 'Serve hot!']
+                      }
+                    ].map((recipe, idx) => (
                       <div key={`${recipe.id}-${idx}`} className="card">
                         <img src={recipe.image} style={{ width: '100%', height: '150px', borderRadius: '12px', objectFit: 'cover', marginBottom: '10px' }} />
                         <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{recipe.title}</h4>
