@@ -8,6 +8,9 @@ import RecipeLibrary from './components/RecipeLibrary.jsx';
 import RecipeModal from './components/RecipeModal.jsx';
 import ApiKeyModal from './components/ApiKeyModal.jsx';
 import PwaInstallPrompt from './components/PwaInstallPrompt.jsx';
+import AuthModal from './components/AuthModal.jsx';
+import AccountModal from './components/AccountModal.jsx';
+import { supabaseService } from './services/supabaseService.js';
 import { IconSparkles } from './components/Icons.jsx';
 import { SUHANU_INITIAL_PANTRY, GROCERY_PRESETS } from './data/suhanuInitialPantry.js';
 
@@ -31,6 +34,26 @@ export default function App() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+
+  // Monitor Supabase Auth Session
+  useEffect(() => {
+    supabaseService.getCurrentSession()
+      .then(session => {
+        if (session?.user) setUser(session.user);
+      })
+      .catch(err => console.debug('No active session:', err));
+
+    const { data: authListener } = supabaseService.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, []);
 
   // Gemini API key — prioritize .env, fallback to localStorage
   const [apiKey, setApiKey] = useState(() => {
@@ -142,6 +165,9 @@ export default function App() {
         onSelectPreset={setActivePresetId}
         pantryItems={pantryItems}
         activePantryItems={activePantryItems}
+        user={user}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenAccountModal={() => setIsAccountModalOpen(true)}
       />
 
       <div className="main-layout">
@@ -215,6 +241,7 @@ export default function App() {
               onResetToDefault={handleResetToDefault}
               activePresetId={activePresetId}
               onSelectPreset={setActivePresetId}
+              householdId={user?.household_id || null}
             />
           )}
         </main>
@@ -242,6 +269,27 @@ export default function App() {
           onInstalled={() => setIsInstallModalOpen(false)}
         />
       )}
+
+      {/* User Auth Modal (Sign In / Register) */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={(authedUser) => setUser(authedUser)}
+      />
+
+      {/* User Account & Kitchen Sharing Modal */}
+      <AccountModal
+        isOpen={isAccountModalOpen}
+        onClose={() => setIsAccountModalOpen(false)}
+        user={user}
+        onSignOut={() => {
+          supabaseService.signOut().catch(() => {});
+          setUser(null);
+        }}
+        onHouseholdChanged={() => {
+          // Trigger any household update if needed
+        }}
+      />
     </div>
   );
 }

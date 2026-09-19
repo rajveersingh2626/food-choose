@@ -272,7 +272,7 @@ export async function generateWeeklyPlanWithGemini({
   // We highlight user feedback and comments with utmost seriousness
   const criticalCommentsSection = (userComments && userComments.trim()) || (wishes && wishes.trim())
     ? `
-🚨 CRITICAL USER REQUIREMENTS & FEEDBACK (MANDATORY TOP PRIORITY - MUST STRICTLY OBEY):
+CRITICAL USER REQUIREMENTS & FEEDBACK (MANDATORY TOP PRIORITY - MUST STRICTLY OBEY):
 "${(userComments && userComments.trim()) || wishes}"
 INSTRUCTION: The user has given explicit personal feedback / comments on the meal plan. You MUST take these comments VERY SERIOUSLY.
 - If the user specifies foods to include or avoid, you MUST strictly follow.
@@ -389,13 +389,13 @@ export async function askGeminiChef({
 
   const customPromptSection = customPrompt && customPrompt.trim()
     ? `
-🚨 USER'S SPECIFIC COMMENT & INSTRUCTION (CONSIDER THIS VERY SERIOUSLY):
+USER'S SPECIFIC COMMENT & INSTRUCTION (CONSIDER THIS VERY SERIOUSLY):
 "${customPrompt}"
 You must explicitly address and satisfy this request in the recommendations!`
     : '';
 
   const excludeSection = excludeTitles.length > 0
-    ? `\n🚨 DEDUPLICATION CRITICAL: Do NOT return any of these dishes or close variations: ${excludeTitles.slice(-25).join(', ')}. All suggested dishes must be completely fresh and unique!`
+    ? `\nDEDUPLICATION CRITICAL: Do NOT return any of these dishes or close variations: ${excludeTitles.slice(-25).join(', ')}. All suggested dishes must be completely fresh and unique!`
     : '';
 
   const prompt = `You are Suhanu's Master AI Chef — renowned for Michelin-level home cooking advice, deep flavor science, and practical elegance.
@@ -485,7 +485,7 @@ export async function fetchLlmRecipes({
 
   const isMakeNow = mode === 'makenow';
   const excludeSection = excludeTitles.length > 0
-    ? `\n🚨 DEDUPLICATION CRITICAL: Do NOT return any of these dishes or close variations: ${excludeTitles.slice(-25).join(', ')}. Provide brand new dishes!`
+    ? `\nDEDUPLICATION CRITICAL: Do NOT return any of these dishes or close variations: ${excludeTitles.slice(-25).join(', ')}. Provide brand new dishes!`
     : '';
 
   const prompt = `You are a Master Culinary AI creating 8 to 10 gourmet recipes for Suhanu.

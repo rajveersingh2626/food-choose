@@ -12,15 +12,24 @@ import {
   IconCoffee,
   IconDumbbell,
   IconUtensils,
-  IconCheckCircle
+  IconCheckCircle,
+  IconCamera,
+  IconMic,
+  IconLayers,
+  IconArrowLeft
 } from './Icons.jsx';
+import ReceiptScanModal from './ReceiptScanModal.jsx';
+import VoiceDumpModal from './VoiceDumpModal.jsx';
+import FridgeSweepModal from './FridgeSweepModal.jsx';
+import PantryAuditStack from './PantryAuditStack.jsx';
 
 export default function PantryManager({
   pantryItems,
   setPantryItems,
   onResetToDefault,
   activePresetId = 'custom',
-  onSelectPreset
+  onSelectPreset,
+  householdId
 }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [newItemName, setNewItemName] = useState('');
@@ -29,6 +38,10 @@ export default function PantryManager({
   const [searchQuery, setSearchQuery] = useState('');
   const [saveToast, setSaveToast] = useState('');
   const [presetModal, setPresetModal] = useState(null); // { preset }
+  const [isReceiptScanOpen, setIsReceiptScanOpen] = useState(false);
+  const [isVoiceDumpOpen, setIsVoiceDumpOpen] = useState(false);
+  const [isFridgeSweepOpen, setIsFridgeSweepOpen] = useState(false);
+  const [isAuditMode, setIsAuditMode] = useState(false);
 
   const notifySave = (msg = '✓ Saved to your pantry') => {
     setSaveToast(msg);
@@ -251,10 +264,83 @@ export default function PantryManager({
             <IconBasket size={20} color="#E7829A" />
             <span>Kitchen Pantry Manager</span>
           </h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '0.78rem', background: '#E7829A', color: 'white', padding: '4px 12px', borderRadius: '999px', fontWeight: '700' }}>
               {inStockCount} of {pantryItems.length} In Stock
             </span>
+
+            {/* Voice Dump Button (Module 1A) */}
+            <button
+              type="button"
+              onClick={() => setIsVoiceDumpOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '5px 12px',
+                borderRadius: '999px',
+                background: '#FAF5FF',
+                border: '1.5px solid #E9D5FF',
+                color: '#7E22CE',
+                fontSize: '0.74rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              title="Speak your grocery list"
+            >
+              <IconMic size={13} color="#7E22CE" />
+              <span>Voice Dump</span>
+            </button>
+
+            {/* Fridge Sweep Button (Module 1B) */}
+            <button
+              type="button"
+              onClick={() => setIsFridgeSweepOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '5px 12px',
+                borderRadius: '999px',
+                background: '#EFF6FF',
+                border: '1.5px solid #BFDBFE',
+                color: '#2563EB',
+                fontSize: '0.74rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              title="Visual camera sweep of open fridge"
+            >
+              <IconCamera size={13} color="#2563EB" />
+              <span>Fridge Sweep</span>
+            </button>
+
+            {/* Gamified Pantry Audit Button (Module 3) */}
+            <button
+              type="button"
+              onClick={() => setIsAuditMode(!isAuditMode)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '5px 12px',
+                borderRadius: '999px',
+                background: isAuditMode ? '#059669' : '#ECFDF5',
+                border: '1.5px solid #86EFAC',
+                color: isAuditMode ? 'white' : '#059669',
+                fontSize: '0.74rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              title="Swipe cards to audit expiring perishables"
+            >
+              <IconLayers size={13} color={isAuditMode ? 'white' : '#059669'} />
+              <span>{isAuditMode ? 'Exit Audit' : 'Audit Freshness'}</span>
+            </button>
+
             <button
               onClick={() => {
                 onResetToDefault();
@@ -474,113 +560,245 @@ export default function PantryManager({
         </div>
       </div>
 
-      {/* Pantry Items List */}
-      <div className="card">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-          <span style={{ fontSize: '0.88rem', fontWeight: '700', color: '#1F2421' }}>
-            {selectedCategory === 'All' ? 'All Groceries' : selectedCategory} ({filteredItems.length})
-          </span>
-          <span style={{ fontSize: '0.76rem', color: '#6B7280' }}>
-            Click checkbox to mark available
-          </span>
-        </div>
-
-        {filteredItems.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '36px 16px', color: '#9CA3AF' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
-              <IconSearch size={32} color="#CBD5E1" />
+      {/* Gamified Pantry Audit Mode (Module 3) */}
+      {isAuditMode ? (
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#1F2421' }}>
+                Perishable Freshness Audit
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: '#6B7280', margin: '4px 0 0 0' }}>
+                Swipe right to keep (+2 days), swipe left if finished or expired.
+              </p>
             </div>
-            <p style={{ margin: 0, fontSize: '0.9rem' }}>No grocery items found matching your filter.</p>
+            <button
+              onClick={() => setIsAuditMode(false)}
+              className="btn-outline"
+              style={{ fontSize: '0.78rem', padding: '6px 14px' }}
+            >
+              Back to Checklist
+            </button>
           </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {filteredItems.map(item => (
-              <div
-                key={item.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  borderRadius: '12px',
-                  background: item.inStock ? '#F4FBF6' : '#FAF7F8',
-                  border: `1.5px solid ${item.inStock ? '#A7F3D0' : 'rgba(0,0,0,0.06)'}`,
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                {/* Toggle & Name */}
-                <div
-                  onClick={() => toggleStock(item.id)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', flex: 1 }}
-                >
-                  <div style={{
-                    width: '22px',
-                    height: '22px',
-                    borderRadius: '6px',
-                    border: `2px solid ${item.inStock ? '#059669' : '#CBD5E1'}`,
-                    background: item.inStock ? '#059669' : 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
-                    {item.inStock && <IconCheck size={14} color="white" />}
-                  </div>
 
-                  <div>
-                    <span style={{
-                      fontSize: '0.88rem',
-                      fontWeight: item.inStock ? '700' : '500',
-                      color: item.inStock ? '#065F46' : '#6B7280',
-                      textDecoration: item.inStock ? 'none' : 'none'
-                    }}>
-                      {item.name}
-                    </span>
-                    <div style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>
-                      {item.category}
-                    </div>
-                  </div>
-                </div>
+          <PantryAuditStack
+            householdId={householdId}
+            onItemUpdated={(itemId, action) => {
+              if (action === 'extend') {
+                notifySave('Freshness extended by 2 days!');
+              } else if (action === 'soft_delete') {
+                // Also update local list
+                setPantryItems(prev => prev.filter(i => i.id !== itemId));
+                notifySave('Item removed from active inventory');
+              }
+            }}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Pantry Items List */}
+          <div className="card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <span style={{ fontSize: '0.88rem', fontWeight: '700', color: '#1F2421' }}>
+                {selectedCategory === 'All' ? 'All Groceries' : selectedCategory} ({filteredItems.length})
+              </span>
+              <span style={{ fontSize: '0.76rem', color: '#6B7280' }}>
+                Click checkbox to mark available
+              </span>
+            </div>
 
-                {/* Quantity & Delete */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input
-                    type="text"
-                    value={item.quantity || ''}
-                    onChange={(e) => updateQuantity(item.id, e.target.value)}
-                    style={{
-                      width: '80px',
-                      padding: '4px 8px',
-                      fontSize: '0.76rem',
-                      borderRadius: '8px',
-                      border: '1px solid rgba(0,0,0,0.1)',
-                      background: 'white',
-                      textAlign: 'center'
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => deleteItem(item.id)}
-                    style={{
-                      border: 'none',
-                      background: 'none',
-                      color: '#EF4444',
-                      cursor: 'pointer',
-                      padding: '4px',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                    title="Remove item"
-                  >
-                    <IconTrash size={14} />
-                  </button>
+            {filteredItems.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '36px 16px', color: '#9CA3AF' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+                  <IconSearch size={32} color="#CBD5E1" />
                 </div>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>No grocery items found matching your filter.</p>
               </div>
-            ))}
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {filteredItems.map(item => {
+                  const storage = item.storage_method || 'fridge';
+                  const storageColors = {
+                    fridge: { bg: '#EFF6FF', text: '#1D4ED8', border: '#BFDBFE', label: 'Fridge' },
+                    counter: { bg: '#FEF3C7', text: '#B45309', border: '#FDE68A', label: 'Counter' },
+                    freezer: { bg: '#ECFEFF', text: '#0E7490', border: '#A5F3FC', label: 'Freezer' }
+                  };
+                  const currentStorage = storageColors[storage] || storageColors.fridge;
+
+                  const cycleStorage = () => {
+                    const nextStorage = storage === 'fridge' ? 'counter' : storage === 'counter' ? 'freezer' : 'fridge';
+                    setPantryItems(pantryItems.map(i => i.id === item.id ? { ...i, storage_method: nextStorage } : i));
+                    notifySave(`Stored on ${nextStorage}`);
+                  };
+
+                  return (
+                    <div
+                      key={item.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '10px 14px',
+                        borderRadius: '12px',
+                        background: item.inStock ? '#F4FBF6' : '#FAF7F8',
+                        border: `1.5px solid ${item.inStock ? '#A7F3D0' : 'rgba(0,0,0,0.06)'}`,
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      {/* Toggle & Name */}
+                      <div
+                        onClick={() => toggleStock(item.id)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', flex: 1 }}
+                      >
+                        <div style={{
+                          width: '22px',
+                          height: '22px',
+                          borderRadius: '6px',
+                          border: `2px solid ${item.inStock ? '#059669' : '#CBD5E1'}`,
+                          background: item.inStock ? '#059669' : 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          {item.inStock && <IconCheck size={14} color="white" />}
+                        </div>
+
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{
+                              fontSize: '0.88rem',
+                              fontWeight: item.inStock ? '700' : '500',
+                              color: item.inStock ? '#065F46' : '#6B7280'
+                            }}>
+                              {item.name}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#9CA3AF', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                            <span>{item.category}</span>
+                            <span>•</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                cycleStorage();
+                              }}
+                              style={{
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                fontSize: '0.66rem',
+                                fontWeight: '700',
+                                textTransform: 'uppercase',
+                                background: currentStorage.bg,
+                                color: currentStorage.text,
+                                border: `1px solid ${currentStorage.border}`,
+                                cursor: 'pointer'
+                              }}
+                              title="Click to cycle storage method (Fridge -> Counter -> Freezer)"
+                            >
+                              {currentStorage.label}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Quantity & Delete */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="text"
+                          value={item.quantity || ''}
+                          onChange={(e) => updateQuantity(item.id, e.target.value)}
+                          style={{
+                            width: '80px',
+                            padding: '4px 8px',
+                            fontSize: '0.76rem',
+                            borderRadius: '8px',
+                            border: '1px solid rgba(0,0,0,0.1)',
+                            background: 'white',
+                            textAlign: 'center'
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => deleteItem(item.id)}
+                          style={{
+                            border: 'none',
+                            background: 'none',
+                            color: '#EF4444',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            borderRadius: '6px',
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
+                          title="Remove item"
+                        >
+                          <IconTrash size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
+
+      {/* Voice Dump Modal (Module 1A) */}
+      <VoiceDumpModal
+        isOpen={isVoiceDumpOpen}
+        onClose={() => setIsVoiceDumpOpen(false)}
+        householdId={householdId}
+        onItemsAdded={(newItems) => {
+          const formatted = newItems.map((item, idx) => ({
+            id: item.id || (Date.now() + idx).toString(),
+            name: item.item_name || item.name,
+            category: item.category === 'perishable' ? 'Fresh Produce' : (item.category || 'Pantry Staples'),
+            quantity: `${item.quantity || 1} ${item.unit || 'units'}`.trim(),
+            storage_method: item.storage_method || 'fridge',
+            inStock: true
+          }));
+          setPantryItems([...formatted, ...pantryItems]);
+          notifySave(`Added ${newItems.length} items from voice intake!`);
+        }}
+      />
+
+      {/* Fridge Sweep Modal (Module 1B) */}
+      <FridgeSweepModal
+        isOpen={isFridgeSweepOpen}
+        onClose={() => setIsFridgeSweepOpen(false)}
+        householdId={householdId}
+        onItemsDetected={(newItems) => {
+          const formatted = newItems.map((item, idx) => ({
+            id: item.id || (Date.now() + idx).toString(),
+            name: item.item_name || item.name,
+            category: item.category === 'perishable' ? 'Fresh Produce' : (item.category || 'Pantry Staples'),
+            quantity: `${item.quantity || 1} ${item.unit || 'units'}`.trim(),
+            storage_method: item.storage_method || 'fridge',
+            inStock: true
+          }));
+          setPantryItems([...formatted, ...pantryItems]);
+          notifySave(`Added ${newItems.length} items from fridge sweep!`);
+        }}
+      />
+
+      {/* Quick-Commerce Receipt Scan Modal (Legacy) */}
+      <ReceiptScanModal
+        isOpen={isReceiptScanOpen}
+        onClose={() => setIsReceiptScanOpen(false)}
+        onItemsAdded={(newItems) => {
+          const formatted = newItems.map((item, idx) => ({
+            id: (Date.now() + idx).toString(),
+            name: item.item_name || item.name,
+            category: item.category === 'perishable' ? 'Fresh Produce' : (item.category || 'Pantry Staples'),
+            quantity: `${item.quantity || 1} ${item.unit || 'units'}`.trim(),
+            inStock: true
+          }));
+          setPantryItems([...formatted, ...pantryItems]);
+          notifySave(`Imported ${newItems.length} items from receipt!`);
+        }}
+      />
     </div>
   );
 }

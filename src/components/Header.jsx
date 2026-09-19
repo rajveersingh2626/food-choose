@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconSliders, IconSmartphone } from './Icons.jsx';
+import { IconSliders, IconSmartphone, IconUser } from './Icons.jsx';
 import PantryContextSelector from './PantryContextSelector.jsx';
 
 export default function Header({
@@ -9,7 +9,10 @@ export default function Header({
   activePresetId,
   onSelectPreset,
   pantryItems,
-  activePantryItems
+  activePantryItems,
+  user,
+  onOpenAuthModal,
+  onOpenAccountModal
 }) {
   return (
     <header className="card" style={{ padding: '16px 24px', borderRadius: '20px' }}>
@@ -78,6 +81,71 @@ export default function Header({
             <IconSmartphone size={13} color="#7E22CE" />
             <span>Install App</span>
           </button>
+
+          {/* User Account / Sign In Pill */}
+          {user ? (
+            <button
+              type="button"
+              onClick={onOpenAccountModal}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 14px 6px 8px',
+                borderRadius: '999px',
+                background: '#FFF5F7',
+                border: '1.5px solid #FBCFE8',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+              }}
+              title="View Account & Kitchen Sharing"
+            >
+              <div style={{
+                width: '22px',
+                height: '22px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #F093A9 0%, #E7829A 100%)',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.72rem',
+                fontWeight: '800'
+              }}>
+                {(user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()}
+              </div>
+              <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#9D174D' }}>
+                {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'My Kitchen'}
+              </span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onOpenAuthModal}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 14px',
+                borderRadius: '999px',
+                background: '#F3F4F6',
+                border: '1.5px solid #E5E7EB',
+                fontSize: '0.76rem',
+                fontWeight: '700',
+                color: '#374151',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+              }}
+              title="Sign in or create an account"
+            >
+              <IconUser size={14} color="#4B5563" />
+              <span>Sign In</span>
+            </button>
+          )}
 
           {/* AI Status Pill (Interactive button to configure key) */}
           <button
