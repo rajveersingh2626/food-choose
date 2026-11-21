@@ -1,4 +1,4 @@
-# food-choose
+# Culinary Partner (food-choose)
 
 A web application built to help figure out what to cook based on whatever ingredients are already in the kitchen.
 
